@@ -1,0 +1,17 @@
+# Render Blueprint — deploy Nova Studio as a Next.js web service.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: nova-studio
+    runtime: node
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: NODE_ENV
+        value: production

@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nova Studio
 
-## Getting Started
+Marketing site for **Nova Studio** — an AI-native website studio. Built with
+Next.js 16, React 19, Tailwind CSS v4, and Motion for animation.
 
-First, run the development server:
+> `Nova Studio` is a placeholder brand. Rename everything from one file:
+> [`src/lib/site.ts`](src/lib/site.ts).
+
+## Tech stack
+
+- **Next.js 16** (App Router, Turbopack) + **React 19**
+- **TypeScript**
+- **Tailwind CSS v4** (CSS-first config in `src/app/globals.css`)
+- **Motion** (`motion/react`) for scroll reveals, magnetic buttons, marquee
+- **lucide-react** icons
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build   # production build
+npm run start   # run the production server
+npm run lint    # eslint
+```
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    layout.tsx        # fonts, metadata, root layout
+    page.tsx          # composes all sections
+    globals.css       # theme tokens, animations, utilities (Tailwind v4)
+  components/
+    site-nav.tsx      # sticky, scroll-aware nav + mobile menu
+    site-footer.tsx
+    sections/         # hero, marquee, services, work, process, about, contact
+    ui/               # reveal, magnetic, aurora, button, section-heading
+  lib/
+    site.ts           # 🔧 brand name, copy, links, nav — edit here
+    utils.ts          # cn() class helper
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Customizing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Brand & copy** → `src/lib/site.ts`
+- **Colors & fonts** → the `@theme` block in `src/app/globals.css` and the font
+  imports in `src/app/layout.tsx`
+- **Sections & content** → files in `src/components/sections/`
 
-## Deploy on Vercel
+### Adding hero video
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The hero uses an animated mock. To use real footage, drop a file in `public/`
+and replace `HeroVisual` in `src/components/sections/hero.tsx`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```tsx
+<video src="/hero.mp4" autoPlay muted loop playsInline
+  className="w-full rounded-4xl border border-border" />
+```
+
+### Wiring the contact form
+
+The form in `src/components/sections/contact.tsx` currently opens the visitor's
+mail client via `mailto:`. For real submissions, add a Next.js route handler
+(`src/app/api/contact/route.ts`) or a form provider (Resend, Formspree, etc.)
+and `fetch` it from `handleSubmit`.
+
+## Deploying to Render
+
+This repo includes [`render.yaml`](render.yaml), a Render Blueprint.
+
+1. Push this repo to GitHub.
+2. In Render, **New → Blueprint**, and point it at the repo.
+3. Render reads `render.yaml`, builds with `npm ci && npm run build`, and serves
+   with `npm run start`. `next start` binds to Render's `PORT` automatically.
+
+You can also deploy manually as a **Web Service**:
+
+- **Build command:** `npm ci && npm run build`
+- **Start command:** `npm run start`
+- **Node version:** 22.12.0
