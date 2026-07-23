@@ -1,146 +1,154 @@
 "use client";
 
-import { motion } from "motion/react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+  type Variants,
+} from "motion/react";
+import { ArrowDown } from "lucide-react";
 import { site } from "@/lib/site";
-import { Aurora } from "../ui/aurora";
-import { ButtonLink } from "../ui/button";
-import { Magnetic } from "../ui/magnetic";
+import { onIntroComplete } from "@/components/intro";
+import { ButtonLink } from "@/components/ui/button";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+
+  // Hold the entrance until the intro overlay has finished, so the copy
+  // animates in as the overlay clears instead of flashing in behind it.
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const off = onIntroComplete(() => setEntered(true));
+    // Safety net: never let the copy stay hidden if the signal is missed.
+    const fallback = window.setTimeout(() => setEntered(true), 6500);
+    return () => {
+      off();
+      clearTimeout(fallback);
+    };
+  }, []);
+
+  // Scroll parallax: video drifts down, text lifts and fades away.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-14%"]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+
+  const container: Variants = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.14, delayChildren: 0.15 } },
+  };
+
+  const materialize: Variants = {
+    hidden: reduced
+      ? { opacity: 0 }
+      : { opacity: 0, y: 26, filter: "blur(18px)" },
+    show: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: 1.1, ease },
+    },
+  };
+
+  // Headline lines avoid an inline `filter` so the light-sweep text clip renders cleanly.
+  const materializeText: Variants = {
+    hidden: reduced ? { opacity: 0 } : { opacity: 0, y: 26 },
+    show: { opacity: 1, y: 0, transition: { duration: 1.1, ease } },
+  };
+
   return (
     <section
       id="top"
-      className="relative flex min-h-screen items-center overflow-hidden pt-28 pb-20"
+      ref={sectionRef}
+      className="relative flex min-h-screen items-start overflow-hidden bg-background"
     >
-      <Aurora />
-      <div className="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)] opacity-40" />
-
-      <div className="relative mx-auto w-full max-w-6xl px-5">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease }}
-          className="mx-auto flex max-w-3xl flex-col items-center text-center"
+      {/* Looping video background with scroll parallax */}
+      <motion.div style={{ y: bgY }} className="absolute inset-0 scale-[1.12]">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/hero-poster.jpg"
+          className="absolute inset-0 h-full w-full object-cover"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-4 py-1.5 text-xs text-muted backdrop-blur">
-            <Sparkles size={14} className="text-brand-2" />
-            {site.tagline}
-          </span>
+          <source src="/herobg2.mp4" type="video/mp4" />
+        </video>
+      </motion.div>
 
-          <h1 className="mt-7 text-balance text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl md:text-7xl">
-            Websites that
-            <br />
-            <span className="text-gradient">think, ship, and sell.</span>
+      {/* Content — left aligned */}
+      <motion.div
+        style={{ y: textY, opacity: textOpacity }}
+        className="relative z-10 w-full px-6 pt-32 md:px-12 md:pt-40"
+      >
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate={entered ? "show" : "hidden"}
+          className="mx-auto flex max-w-6xl flex-col items-start text-left"
+        >
+          <h1 className="max-w-4xl font-display text-2xl font-light leading-[1.05] tracking-[-0.01em] text-balance text-[#161310] sm:text-3xl lg:text-4xl">
+            <motion.span variants={materializeText} className="block">
+              An AI-native design studio
+            </motion.span>
+            <motion.span variants={materializeText} className="block">
+              helping early-stage companies look
+            </motion.span>
+            <motion.span variants={materializeText} className="block">
+              as credible as the ideas behind them.
+            </motion.span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted">
-            {site.name} is an AI-native studio pairing world-class design with
-            engineering and machine intelligence — so your site launches faster
-            and works harder.
-          </p>
-
-          <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-            <Magnetic>
-              <ButtonLink href={site.cta.href} size="lg">
-                {site.cta.label}
-                <ArrowRight
-                  size={18}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </ButtonLink>
-            </Magnetic>
-            <ButtonLink href="#work" size="lg" variant="outline">
+          <motion.div
+            variants={materialize}
+            className="mt-9 flex flex-wrap items-center gap-3"
+          >
+            <ButtonLink
+              href={site.cta.href}
+              variant="solid-dark"
+              size="lg"
+              className="h-12"
+            >
+              {site.cta.label}
+            </ButtonLink>
+            <ButtonLink
+              href="#work"
+              variant="outline-dark"
+              size="lg"
+              className="h-12"
+            >
               See our work
             </ButtonLink>
-          </div>
+          </motion.div>
         </motion.div>
+      </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.2, ease }}
-          className="mt-16 md:mt-20"
+      {/* Scroll hint */}
+      <motion.a
+        href="#work"
+        aria-label="Scroll to work"
+        initial={{ opacity: 0 }}
+        animate={entered ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 1, delay: entered ? 0.9 : 0, ease }}
+        className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 md:block"
+      >
+        <motion.span
+          animate={reduced ? undefined : { y: [0, 8, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/[0.03] text-foreground/70 backdrop-blur-sm"
         >
-          <HeroVisual />
-        </motion.div>
-      </div>
+          <ArrowDown size={16} />
+        </motion.span>
+      </motion.a>
     </section>
-  );
-}
-
-/**
- * Stylized "product" window that mimics an AI website builder in motion.
- * Swap this for a real <video> when brand footage is ready:
- *   <video src="/hero.mp4" autoPlay muted loop playsInline />
- */
-function HeroVisual() {
-  return (
-    <div className="relative mx-auto max-w-4xl">
-      <div className="absolute -inset-px rounded-4xl bg-[linear-gradient(120deg,var(--color-brand),var(--color-brand-2),var(--color-accent))] opacity-40 blur-md" />
-      <div className="relative overflow-hidden rounded-4xl border border-border bg-surface/80 shadow-2xl backdrop-blur">
-        <div className="flex items-center gap-2 border-b border-border px-5 py-3.5">
-          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-          <div className="ml-4 flex h-7 flex-1 items-center rounded-lg bg-background/60 px-3 font-mono text-xs text-muted">
-            {site.domain}
-          </div>
-        </div>
-
-        <div className="grid gap-4 p-5 md:grid-cols-[1.4fr_1fr] md:p-7">
-          <div className="space-y-4">
-            <div className="h-40 rounded-2xl bg-[linear-gradient(120deg,color-mix(in_oklab,var(--color-brand)_40%,transparent),color-mix(in_oklab,var(--color-brand-2)_40%,transparent))]" />
-            <div className="space-y-2.5">
-              <ShimmerBar className="w-3/4" />
-              <ShimmerBar className="w-full" />
-              <ShimmerBar className="w-5/6" />
-            </div>
-            <div className="flex gap-3 pt-1">
-              <div className="h-9 w-28 rounded-full bg-foreground/90" />
-              <div className="h-9 w-24 rounded-full border border-border" />
-            </div>
-          </div>
-
-          <div className="space-y-3 rounded-2xl border border-border bg-background/40 p-4">
-            <div className="flex items-center gap-2 font-mono text-xs text-brand-2">
-              <Sparkles size={13} />
-              AI copilot
-            </div>
-            {[
-              "Generating layout…",
-              "Writing hero copy…",
-              "Optimizing for SEO…",
-              "Shipping to production ✓",
-            ].map((line, i) => (
-              <motion.div
-                key={line}
-                initial={{ opacity: 0.25 }}
-                animate={{ opacity: [0.25, 1, 0.25] }}
-                transition={{
-                  duration: 3,
-                  delay: i * 0.6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="rounded-lg bg-surface-2/60 px-3 py-2 font-mono text-[11px] text-muted"
-              >
-                {line}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ShimmerBar({ className }: { className?: string }) {
-  return (
-    <div
-      className={`h-3 rounded-full bg-[linear-gradient(90deg,var(--color-surface-2),color-mix(in_oklab,var(--color-brand)_30%,var(--color-surface-2)),var(--color-surface-2))] bg-[length:200%_100%] animate-shimmer ${className ?? ""}`}
-    />
   );
 }

@@ -1,0 +1,260 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { Sparkle } from "lucide-react";
+import { IntroWisps } from "@/components/intro-wisps";
+
+const IMAGES = [
+  "/intro-1.png",
+  "/intro-2.png",
+  "/intro-3.png",
+  "/intro-4.png",
+  "/intro-5.png",
+  "/intro-6.png",
+];
+
+const ease = [0.22, 1, 0.36, 1] as const;
+const expoOut = [0.16, 1, 0.3, 1] as const;
+
+// Timeline (ms)
+const T_ICON = 300; // Wisp STUDIO -> Wisp ✦ STUDIO
+const T_BOX = 750; // split apart + framed box opens
+const T_CYCLE = 1100; // start cycling images
+const CYCLE_STEP = 200; // per-image
+const T_ANTICIPATE = T_CYCLE + IMAGES.length * CYCLE_STEP + 120;
+const T_EXPAND = T_ANTICIPATE + 200;
+const T_DONE = T_EXPAND + 950;
+
+// Hero background still (extracted from herobg2.mp4) — the intro's final
+// frame lands on this exact image so the handoff into the hero is seamless.
+const HERO_POSTER = "/hero-poster.jpg";
+
+// --- Intro completion signal ---------------------------------------------
+// Lets the hero (and anything else) hold its entrance animation until the
+// intro overlay has finished, so content animates in smoothly on reveal
+// instead of flashing in already-completed behind the overlay.
+let introComplete = false;
+
+function markIntroComplete() {
+  if (introComplete) return;
+  introComplete = true;
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("intro:complete"));
+  }
+}
+
+/** Subscribe to intro completion. Fires immediately if already complete. */
+export function onIntroComplete(cb: () => void): () => void {
+  if (introComplete) {
+    cb();
+    return () => {};
+  }
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("intro:complete", cb);
+  return () => window.removeEventListener("intro:complete", cb);
+}
+
+type Dims = { bw: number; bh: number; vw: number; vh: number };
+
+export function Intro() {
+  const reduced = useReducedMotion();
+  const [visible, setVisible] = useState(true);
+  const [step, setStep] = useState(0); // 0 together, 1 icon, 2 box, 3 cycle, 4 anticipate, 5 expand
+  const [img, setImg] = useState(0);
+  const [dims, setDims] = useState<Dims | null>(null);
+
+  useEffect(() => {
+    if (reduced) {
+      setVisible(false);
+      markIntroComplete();
+      return;
+    }
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const bw = Math.min(360, vw * 0.82);
+    const bh = Math.min(bw * 0.66, vh * 0.5);
+    setDims({ bw, bh, vw, vh });
+
+    document.body.style.overflow = "hidden";
+
+    const timers: number[] = [];
+    const at = (ms: number, fn: () => void) =>
+      timers.push(window.setTimeout(fn, ms));
+
+    at(T_ICON, () => setStep(1));
+    at(T_BOX, () => setStep(2));
+    at(T_CYCLE, () => setStep(3));
+    for (let i = 1; i < IMAGES.length; i++) {
+      at(T_CYCLE + i * CYCLE_STEP, () => setImg(i));
+    }
+    at(T_ANTICIPATE, () => setStep(4));
+    at(T_EXPAND, () => setStep(5));
+    at(T_DONE, () => {
+      setVisible(false);
+      markIntroComplete();
+    });
+
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+      document.body.style.overflow = "";
+    };
+  }, [reduced]);
+
+  useEffect(() => {
+    if (!visible) document.body.style.overflow = "";
+  }, [visible]);
+
+  if (reduced) return null;
+
+  const slotW = dims
+    ? step === 5
+      ? dims.vw
+      : step === 0
+        ? 0
+        : step === 1
+          ? 48
+          : dims.bw
+    : 0;
+  const slotH = dims
+    ? step === 5
+      ? dims.vh
+      : step < 2
+        ? step === 1
+          ? 48
+          : 28
+        : dims.bh
+    : 28;
+
+  const sizeTransition =
+    step === 5 ? { duration: 0.9, ease: expoOut } : { duration: 0.5, ease };
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="intro"
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease }}
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#1a1512]"
+        >
+          {/* warm radial glow so the brown isn't flat */}
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(120%_90%_at_50%_40%,#241c15_0%,#1a1512_55%,#0f0b08_100%)]" />
+          {/* film grain for texture */}
+          <div className="grain pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-soft-light" />
+
+          {/* Wind "wisps" drifting behind the wordmark */}
+          <IntroWisps />
+
+          <div className="flex w-full items-center justify-center gap-4">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: step < 5 ? 1 : 0 }}
+              transition={{ duration: 0.6, ease }}
+              className="min-w-0 flex-1 text-right font-display text-4xl font-normal leading-none tracking-[0.02em] whitespace-nowrap text-foreground sm:text-5xl"
+            >
+              Wisp
+            </motion.span>
+
+            {/* Center slot: holds the icon, then the framed box */}
+            <motion.div
+              animate={{ width: slotW, height: slotH }}
+              transition={sizeTransition}
+              className="relative flex shrink-0 items-center justify-center"
+            >
+              {/* ✦ icon */}
+              <motion.span
+                animate={{
+                  opacity: step === 1 ? 1 : 0,
+                  scale: step === 1 ? 1 : 0.3,
+                }}
+                transition={{ duration: 0.4, ease }}
+                className="absolute text-foreground"
+              >
+                <motion.span
+                  animate={{ rotate: 360, scale: [1, 1.18, 1] }}
+                  transition={{
+                    rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+                    scale: {
+                      duration: 1.2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                  }}
+                  className="block drop-shadow-[0_0_12px_rgba(255,240,220,0.9)]"
+                >
+                  <Sparkle
+                    className="h-6 w-6"
+                    fill="currentColor"
+                    strokeWidth={1}
+                  />
+                </motion.span>
+              </motion.span>
+
+              {/* Framed image box */}
+              <motion.div
+                animate={{
+                  opacity: step >= 2 ? 1 : 0,
+                  scale: step === 4 ? 0.95 : step >= 2 ? 1 : 0.9,
+                  borderRadius: step === 5 ? 0 : 10,
+                }}
+                transition={
+                  step === 5
+                    ? { duration: 0.9, ease: expoOut }
+                    : { duration: step === 4 ? 0.2 : 0.5, ease }
+                }
+                className="absolute inset-0 overflow-hidden bg-surface"
+              >
+                {IMAGES.map((src, i) => (
+                  <motion.img
+                    key={src}
+                    src={src}
+                    alt=""
+                    animate={{ opacity: i === img ? 1 : 0 }}
+                    transition={{ duration: 0.3, ease }}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ))}
+                {/* Final frame = the hero's background still. Matches the
+                    hero video's object-cover + scale so the intro resolves
+                    directly into the hero with no visible cut. */}
+                <motion.img
+                  src={HERO_POSTER}
+                  alt=""
+                  animate={{ opacity: step >= 5 ? 1 : 0 }}
+                  transition={{ duration: 0.5, ease }}
+                  className="absolute inset-0 h-full w-full scale-[1.12] object-cover"
+                />
+              </motion.div>
+
+              {/* Corner brackets — sibling of the clipped box so they stay visible */}
+              <motion.div
+                animate={{
+                  opacity: step >= 2 && step < 5 ? 1 : 0,
+                  scale: step === 4 ? 0.95 : 1,
+                }}
+                transition={{ duration: step === 4 ? 0.22 : 0.4, ease }}
+                className="pointer-events-none absolute inset-0 drop-shadow-[0_0_4px_rgba(255,255,255,1)] drop-shadow-[0_0_12px_rgba(255,255,255,0.85)] drop-shadow-[0_0_26px_rgba(255,240,220,0.7)]"
+              >
+                <span className="absolute -left-2 -top-2 h-5 w-5 border-l-[2px] border-t-[2px] border-white!" />
+                <span className="absolute -right-2 -top-2 h-5 w-5 border-r-[2px] border-t-[2px] border-white!" />
+                <span className="absolute -bottom-2 -left-2 h-5 w-5 border-b-[2px] border-l-[2px] border-white!" />
+                <span className="absolute -bottom-2 -right-2 h-5 w-5 border-b-[2px] border-r-[2px] border-white!" />
+              </motion.div>
+            </motion.div>
+
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: step < 5 ? 1 : 0 }}
+              transition={{ duration: 0.6, ease }}
+              className="min-w-0 flex-1 text-left font-sans text-3xl font-light leading-none uppercase tracking-[0.15em] whitespace-nowrap text-foreground/90 sm:text-4xl"
+            >
+              STUDIO
+            </motion.span>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

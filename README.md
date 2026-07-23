@@ -1,17 +1,16 @@
-# Nova Studio
+# Wisp Studio
 
-Marketing site for **Nova Studio** — an AI-native website studio. Built with
+Marketing site for **Wisp Studio** — a website design & build studio. Built with
 Next.js 16, React 19, Tailwind CSS v4, and Motion for animation.
 
-> `Nova Studio` is a placeholder brand. Rename everything from one file:
-> [`src/lib/site.ts`](src/lib/site.ts).
+> Brand, copy, and links live in one file: [`src/lib/site.ts`](src/lib/site.ts).
 
 ## Tech stack
 
 - **Next.js 16** (App Router, Turbopack) + **React 19**
 - **TypeScript**
 - **Tailwind CSS v4** (CSS-first config in `src/app/globals.css`)
-- **Motion** (`motion/react`) for scroll reveals, magnetic buttons, marquee
+- **Motion** (`motion/react`) for scroll reveals and magnetic buttons
 - **lucide-react** icons
 
 ## Getting started
@@ -37,12 +36,12 @@ npm run lint    # eslint
 src/
   app/
     layout.tsx        # fonts, metadata, root layout
-    page.tsx          # composes all sections
+    page.tsx          # composes the two sections
     globals.css       # theme tokens, animations, utilities (Tailwind v4)
   components/
     site-nav.tsx      # sticky, scroll-aware nav + mobile menu
     site-footer.tsx
-    sections/         # hero, marquee, services, work, process, about, contact
+    sections/         # hero, work
     ui/               # reveal, magnetic, aurora, button, section-heading
   lib/
     site.ts           # 🔧 brand name, copy, links, nav — edit here
@@ -66,12 +65,11 @@ and replace `HeroVisual` in `src/components/sections/hero.tsx`:
   className="w-full rounded-4xl border border-border" />
 ```
 
-### Wiring the contact form
+### Contact
 
-The form in `src/components/sections/contact.tsx` currently opens the visitor's
-mail client via `mailto:`. For real submissions, add a Next.js route handler
-(`src/app/api/contact/route.ts`) or a form provider (Resend, Formspree, etc.)
-and `fetch` it from `handleSubmit`.
+CTAs open the visitor's mail client via a `mailto:` link set in
+[`src/lib/site.ts`](src/lib/site.ts). Swap `email`/`domain` there for the real
+addresses.
 
 ## Deploying to Render
 

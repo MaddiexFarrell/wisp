@@ -2,7 +2,12 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "ghost" | "outline";
+type Variant =
+  | "primary"
+  | "ghost"
+  | "outline"
+  | "solid-dark"
+  | "outline-dark";
 type Size = "md" | "lg";
 
 const base =
@@ -10,10 +15,15 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)] bg-[linear-gradient(100deg,var(--color-brand),var(--color-brand-2))] hover:shadow-[0_8px_40px_-8px_var(--color-brand)] hover:brightness-110",
+    "bg-foreground text-background hover:brightness-105 hover:shadow-[0_0_50px_-12px_var(--color-brand)]",
   outline:
     "border border-border bg-surface/40 text-foreground backdrop-blur hover:bg-surface-2 hover:border-white/20",
   ghost: "text-muted hover:text-foreground",
+  // For use on light sections (e.g. the hero): a dark pill + a dark outline.
+  "solid-dark":
+    "bg-[#3a2a1c] text-white hover:brightness-110 hover:shadow-[0_0_40px_-10px_rgba(58,42,28,0.6)]",
+  "outline-dark":
+    "border border-black/20 bg-white/40 text-[#161310] backdrop-blur hover:border-black/40 hover:bg-white/70",
 };
 
 const sizes: Record<Size, string> = {

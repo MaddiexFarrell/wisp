@@ -2,30 +2,31 @@
  * Central place for brand + copy. Rename the studio, tweak messaging, or swap
  * links here and it flows through the whole site.
  */
+const email = "hello@wispstudio.com";
+
+// Primary conversion action — hero, nav, and footer all point here.
+const calendly = "https://calendly.com/maddiefarrell7/30min";
+
 export const site = {
-  name: "Nova Studio",
-  shortName: "Nova",
-  domain: "novastudio.com",
-  email: "hello@novastudio.com",
-  tagline: "The AI-native website studio",
+  name: "Wisp Studio",
+  shortName: "Wisp",
+  domain: "wispstudio.com",
+  email,
+  calendly,
+  tagline: "A website design & build studio",
   description:
-    "Nova Studio designs and ships AI-native websites — fast, beautiful, and built to think. Strategy, design, and engineering under one roof.",
+    "Wisp Studio designs and builds atmospheric websites — cinematic, considered, and quietly unforgettable. Strategy, design, and engineering under one roof.",
   location: "Remote · Working worldwide",
   social: {
     x: "https://x.com",
-    linkedin: "https://linkedin.com",
+    linkedin: "https://www.linkedin.com/in/madeline-farrell7/",
     github: "https://github.com",
     dribbble: "https://dribbble.com",
   },
-  nav: [
-    { label: "Services", href: "#services" },
-    { label: "Work", href: "#work" },
-    { label: "Process", href: "#process" },
-    { label: "About", href: "#about" },
-  ],
+  nav: [{ label: "Work", href: "#work" }],
   cta: {
-    label: "Start a project",
-    href: "#contact",
+    label: "Book a call",
+    href: calendly,
   },
 } as const;
 

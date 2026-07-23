@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #050507;
-  --color-surface: #0b0b11;
-  --color-surface-2: #111119;
-  --color-foreground: #f4f4f6;
-  --color-muted: #9a9aac;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-background: #0a0806;
+  --color-surface: #14100c;
+  --color-surface-2: #1d1712;
+  --color-foreground: #f4efe6;
+  --color-muted: #9a8f81;
+  --color-border: rgba(255, 240, 220, 0.07);
 
-  --color-brand: #7c5cff;
-  --color-brand-2: #21d4fd;
-  --color-accent: #ff6ec7;
+  /* Wisp accent — warm ember / amber-gold, like light caught in mist */
+  --color-brand: #f0b464;
+  --color-brand-2: #e08a4a;
+  --color-accent: #ffd9a0;
 
+  --font-display: var(--font-display), ui-serif, Georgia, serif;
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
+  --font-inter: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   --radius-4xl: 2rem;
 
@@ -22,6 +25,7 @@
   --animate-float: float 8s ease-in-out infinite;
   --animate-pulse-glow: pulse-glow 4s ease-in-out infinite;
   --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-drift: drift 26s ease-in-out infinite;
 }
 
 @keyframes marquee {
@@ -59,6 +63,20 @@
   }
   to {
     background-position: -200% center;
+  }
+}
+
+/* Slow, organic drift for atmospheric wisp layers */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-3%, 2%, 0) scale(0.96);
   }
 }
 
@@ -138,6 +156,70 @@ body {
     ),
     linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
   background-size: 64px 64px;
+}
+
+/* Faintly glowing serif accent — for the italic "wisp" word in headlines */
+@utility text-glow {
+  color: var(--color-brand);
+  text-shadow:
+    0 0 24px color-mix(in oklab, var(--color-brand) 45%, transparent),
+    0 0 64px color-mix(in oklab, var(--color-brand) 25%, transparent);
+}
+
+/* Soft light sweeping across white text — like a glare drifting over the words */
+@utility text-lumen {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.92) 40%,
+    #ffffff 50%,
+    rgba(255, 249, 238, 1) 56%,
+    rgba(255, 255, 255, 0.92) 64%,
+    rgba(255, 255, 255, 0.92) 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 9s ease-in-out infinite;
+  filter: drop-shadow(0 2px 18px rgba(0, 0, 0, 0.7))
+    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 34px rgba(255, 236, 205, 0.2));
+}
+
+/* Luminous, slowly-sweeping accent word — moving amber→cream gradient + glow */
+@utility text-wisp {
+  background: linear-gradient(
+    100deg,
+    var(--color-brand) 18%,
+    #fff3df 45%,
+    var(--color-accent) 62%,
+    var(--color-brand) 82%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 7s linear infinite;
+  filter: drop-shadow(
+    0 0 34px color-mix(in oklab, var(--color-brand) 50%, transparent)
+  );
+}
+
+/* Cinematic radial vignette to sink the edges of a dark section into black */
+@utility vignette {
+  background: radial-gradient(
+    120% 90% at 50% 38%,
+    transparent 45%,
+    color-mix(in oklab, var(--color-background) 70%, transparent) 78%,
+    var(--color-background) 100%
+  );
+}
+
+/* Fine film grain overlay (SVG fractal noise, no image asset needed) */
+@utility grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
 }
 
 @media (prefers-reduced-motion: reduce) {

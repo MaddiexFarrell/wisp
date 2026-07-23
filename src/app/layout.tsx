@@ -1,7 +1,17 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Space_Grotesk, JetBrains_Mono, Inter } from "next/font/google";
 import { site } from "@/lib/site";
+import { Intro } from "@/components/intro";
 import "./globals.css";
+
+// Modern editorial serif with soul for oversized display headlines
+const display = Fraunces({
+  variable: "--font-display",
+  subsets: ["latin"],
+  axes: ["opsz", "SOFT"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 const sans = Space_Grotesk({
   variable: "--font-sans",
@@ -11,6 +21,13 @@ const sans = Space_Grotesk({
 
 const mono = JetBrains_Mono({
   variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Body / subcopy typeface
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -52,9 +69,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${mono.variable} h-full antialiased`}
+      className={`${display.variable} ${sans.variable} ${mono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <Intro />
         {children}
       </body>
     </html>

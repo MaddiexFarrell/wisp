@@ -4,20 +4,45 @@ import { site } from "@/lib/site";
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="relative border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 py-16">
+    <footer className="relative overflow-hidden border-t border-border">
+      {/* Background image */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url(/footerbackground2.png)" }}
+      />
+      {/* Scrim: keep the image visible but the text legible */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/20"
+      />
+
+      <div className="relative z-10 mx-auto max-w-6xl px-5 py-16">
         <div className="flex flex-col justify-between gap-10 md:flex-row">
           <div className="max-w-sm">
-            <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-              <span className="grid h-8 w-8 place-items-center rounded-xl bg-[linear-gradient(135deg,var(--color-brand),var(--color-brand-2))]">
-                <span className="h-3 w-3 rounded-[3px] bg-background" />
-              </span>
-              {site.name}
-            </div>
-            <p className="mt-4 text-sm leading-relaxed text-muted">
-              {site.description}
-            </p>
-            <p className="mt-4 font-mono text-xs text-muted">{site.location}</p>
+            <Link
+              href="#top"
+              aria-label={site.name}
+              className="inline-flex items-center"
+            >
+              {/* Logo is a monochrome wordmark on transparency, so we paint it
+                  via a CSS mask — gives an exact beige rather than an
+                  approximate `filter` tint. */}
+              <span
+                aria-hidden
+                className="block aspect-[1179/136] h-4 bg-[#d9c7a3] md:h-5"
+                style={{
+                  WebkitMaskImage: "url(/Wisp%20Logo.png)",
+                  maskImage: "url(/Wisp%20Logo.png)",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskPosition: "left center",
+                  maskPosition: "left center",
+                }}
+              />
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
@@ -25,10 +50,8 @@ export function SiteFooter() {
             <FooterCol
               title="Connect"
               links={[
-                { label: "X / Twitter", href: site.social.x },
                 { label: "LinkedIn", href: site.social.linkedin },
-                { label: "GitHub", href: site.social.github },
-                { label: "Dribbble", href: site.social.dribbble },
+                { label: "Set up a meeting", href: site.calendly },
               ]}
             />
             <div>
@@ -47,7 +70,6 @@ export function SiteFooter() {
           <p>
             © {year} {site.name}. All rights reserved.
           </p>
-          <p className="font-mono">Designed & built in-house.</p>
         </div>
       </div>
     </footer>

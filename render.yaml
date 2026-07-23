@@ -1,8 +1,8 @@
-# Render Blueprint — deploy Nova Studio as a Next.js web service.
+# Render Blueprint — deploy Wisp Studio as a Next.js web service.
 # Docs: https://render.com/docs/blueprint-spec
 services:
   - type: web
-    name: nova-studio
+    name: wisp-studio
     runtime: node
     plan: starter
     region: oregon
