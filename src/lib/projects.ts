@@ -10,6 +10,15 @@ export type Project = {
 // Shared list of the sites shown in the Work section.
 export const projects: Project[] = [
   {
+    name: "Arceus",
+    url: "https://arceus.legal/",
+    image: "/work/Arceus.png",
+    category: "Legal AI",
+    year: "2026",
+    blurb:
+      "A sharp, trust-forward brand and site for AI-native legal — licensed attorneys and contract intelligence built to close deals faster.",
+  },
+  {
     name: "Vultron",
     url: "https://www.vultron.ai/",
     image: "/work/Vultron.png",

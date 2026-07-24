@@ -2,7 +2,7 @@
  * Central place for brand + copy. Rename the studio, tweak messaging, or swap
  * links here and it flows through the whole site.
  */
-const email = "hello@wispstudio.com";
+const email = "maddie@wispstudio.design";
 
 // Primary conversion action — hero, nav, and footer all point here.
 const calendly = "https://calendly.com/maddiefarrell7/30min";
