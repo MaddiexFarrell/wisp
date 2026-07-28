@@ -1,33 +1,23 @@
 import type { Metadata } from "next";
-import { Fraunces, Space_Grotesk, JetBrains_Mono, Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/site";
 import { Intro } from "@/components/intro";
 import "./globals.css";
 
-// Modern editorial serif with soul for oversized display headlines
-const display = Fraunces({
-  variable: "--font-display",
-  subsets: ["latin"],
-  axes: ["opsz", "SOFT"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const sans = Space_Grotesk({
+// Söhne-style neo-grotesque (Inter is the closest free match) used across
+// the entire site — headlines, body copy, and UI text all share this one
+// family now. `--font-display` and `--font-inter` are aliased to it in
+// globals.css so every existing font-display / font-sans / font-inter
+// utility resolves to the same typeface without touching each component.
+const sans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
+// Small uppercase labels / index numbers keep a distinct monospace accent.
 const mono = JetBrains_Mono({
   variable: "--font-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// Body / subcopy typeface
-const inter = Inter({
-  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -69,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${display.variable} ${sans.variable} ${mono.variable} ${inter.variable} h-full antialiased`}
+      className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Intro />

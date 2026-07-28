@@ -30,10 +30,10 @@ export function SiteFooter() {
                   approximate `filter` tint. */}
               <span
                 aria-hidden
-                className="block aspect-[1179/136] h-4 bg-[#d9c7a3] md:h-5"
+                className="block aspect-[1544/283] h-5 bg-[#d9c7a3] md:h-6"
                 style={{
-                  WebkitMaskImage: "url(/Wisp%20Logo.png)",
-                  maskImage: "url(/Wisp%20Logo.png)",
+                  WebkitMaskImage: "url(/wisp-logo-white.png)",
+                  maskImage: "url(/wisp-logo-white.png)",
                   WebkitMaskRepeat: "no-repeat",
                   maskRepeat: "no-repeat",
                   WebkitMaskSize: "contain",

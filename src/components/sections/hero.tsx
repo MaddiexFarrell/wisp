@@ -98,15 +98,20 @@ export function Hero() {
         >
           <h1 className="max-w-4xl font-display text-2xl font-light leading-[1.05] tracking-[-0.01em] text-balance text-[#161310] sm:text-3xl lg:text-4xl">
             <motion.span variants={materializeText} className="block">
-              An AI-native design studio
+              Helping early-stage startups earn the trust
             </motion.span>
             <motion.span variants={materializeText} className="block">
-              helping early-stage companies look
-            </motion.span>
-            <motion.span variants={materializeText} className="block">
-              as credible as the ideas behind them.
+              their products deserve.
             </motion.span>
           </h1>
+
+          <motion.p
+            variants={materializeText}
+            className="mt-6 max-w-2xl font-sans text-base font-normal leading-relaxed text-[#161310]/80 sm:text-lg"
+          >
+            Designed to help launch faster, make a stronger first impression,
+            and grow with confidence.
+          </motion.p>
 
           <motion.div
             variants={materialize}

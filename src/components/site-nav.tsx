@@ -30,7 +30,7 @@ export function SiteNav() {
           <Link href="#top" aria-label={site.name} className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/Wisp%20Logo.png"
+              src="/wisp-logo-dark.png"
               alt={site.name}
               className="h-5 w-auto md:h-6"
             />

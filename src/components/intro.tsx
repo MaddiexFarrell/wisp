@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Sparkle } from "lucide-react";
 import { IntroWisps } from "@/components/intro-wisps";
 
 const IMAGES = [
@@ -19,8 +18,10 @@ const expoOut = [0.16, 1, 0.3, 1] as const;
 
 // Timeline (ms)
 const T_ICON = 300; // Wisp STUDIO -> Wisp ✦ STUDIO
-const T_BOX = 750; // split apart + framed box opens
-const T_CYCLE = 1100; // start cycling images
+// Hold the spinning sparkle on screen for ~1.15s (T_ICON -> T_BOX) so viewers
+// can actually register the icon before the frame opens into the image.
+const T_BOX = 1450; // split apart + framed box opens
+const T_CYCLE = 1800; // start cycling images
 const CYCLE_STEP = 200; // per-image
 const T_ANTICIPATE = T_CYCLE + IMAGES.length * CYCLE_STEP + 120;
 const T_EXPAND = T_ANTICIPATE + 200;
@@ -130,6 +131,21 @@ export function Intro() {
   const sizeTransition =
     step === 5 ? { duration: 0.9, ease: expoOut } : { duration: 0.5, ease };
 
+  // Corner-bracket metrics animate across the timeline so the frame reads as a
+  // tight little viewfinder hugging the icon at first, then opens out into a
+  // proportional frame on the larger image — never chunky at the small size.
+  // Arm length + inset grow with the slot so the corners "fly apart" as the
+  // box expands, landing exactly on the image corners.
+  const frameSmall = step <= 1;
+  const cornerLen = frameSmall ? 10 : 22;
+  const cornerInset = frameSmall ? -3 : -8;
+  const cornerBorder = frameSmall ? 1.5 : 2;
+  // Visible from the icon step (1) through the framed-image steps, then fades
+  // as the box expands full-screen (5).
+  const frameVisible = step >= 1 && step < 5;
+  const cornerScale = step === 4 ? 0.95 : 1;
+  const cornerStyle = { borderColor: "#fff", borderStyle: "solid" } as const;
+
   return (
     <AnimatePresence>
       {visible && (
@@ -152,7 +168,7 @@ export function Intro() {
               initial={{ opacity: 0 }}
               animate={{ opacity: step < 5 ? 1 : 0 }}
               transition={{ duration: 0.6, ease }}
-              className="min-w-0 flex-1 text-right font-display text-4xl font-normal leading-none tracking-[0.02em] whitespace-nowrap text-foreground sm:text-5xl"
+              className="min-w-0 flex-1 text-right font-sans text-4xl font-bold leading-none tracking-[-0.01em] whitespace-nowrap text-foreground sm:text-5xl"
             >
               Wisp
             </motion.span>
@@ -175,7 +191,7 @@ export function Intro() {
                 <motion.span
                   animate={{ rotate: 360, scale: [1, 1.18, 1] }}
                   transition={{
-                    rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+                    rotate: { duration: 2.3, repeat: Infinity, ease: "linear" },
                     scale: {
                       duration: 1.2,
                       repeat: Infinity,
@@ -184,11 +200,17 @@ export function Intro() {
                   }}
                   className="block drop-shadow-[0_0_12px_rgba(255,240,220,0.9)]"
                 >
-                  <Sparkle
+                  {/* Custom 4-point sparkle: concave sides that meet in sharp
+                      cusped points (lucide's Sparkle has soft, rounded tips). */}
+                  <svg
+                    viewBox="0 0 24 24"
                     className="h-6 w-6"
                     fill="currentColor"
-                    strokeWidth={1}
-                  />
+                    stroke="none"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 0 Q15 9 24 12 Q15 15 12 24 Q9 15 0 12 Q9 9 12 0 Z" />
+                  </svg>
                 </motion.span>
               </motion.span>
 
@@ -228,19 +250,69 @@ export function Intro() {
                 />
               </motion.div>
 
-              {/* Corner brackets — sibling of the clipped box so they stay visible */}
+              {/* Corner brackets — the four arms of the icon's frame. They're
+                  visible from the icon step and, because this layer is
+                  `inset-0` inside the resizing slot, they ride outward with the
+                  box as it grows: the icon's tight little frame "opens up" into
+                  the image's corner viewfinder. Arm length / inset / stroke all
+                  scale with the slot so the corners never look chunky small. */}
               <motion.div
-                animate={{
-                  opacity: step >= 2 && step < 5 ? 1 : 0,
-                  scale: step === 4 ? 0.95 : 1,
-                }}
+                animate={{ opacity: frameVisible ? 1 : 0, scale: cornerScale }}
                 transition={{ duration: step === 4 ? 0.22 : 0.4, ease }}
                 className="pointer-events-none absolute inset-0 drop-shadow-[0_0_4px_rgba(255,255,255,1)] drop-shadow-[0_0_12px_rgba(255,255,255,0.85)] drop-shadow-[0_0_26px_rgba(255,240,220,0.7)]"
               >
-                <span className="absolute -left-2 -top-2 h-5 w-5 border-l-[2px] border-t-[2px] border-white!" />
-                <span className="absolute -right-2 -top-2 h-5 w-5 border-r-[2px] border-t-[2px] border-white!" />
-                <span className="absolute -bottom-2 -left-2 h-5 w-5 border-b-[2px] border-l-[2px] border-white!" />
-                <span className="absolute -bottom-2 -right-2 h-5 w-5 border-b-[2px] border-r-[2px] border-white!" />
+                <motion.span
+                  className="absolute"
+                  style={cornerStyle}
+                  animate={{
+                    top: cornerInset,
+                    left: cornerInset,
+                    width: cornerLen,
+                    height: cornerLen,
+                    borderTopWidth: cornerBorder,
+                    borderLeftWidth: cornerBorder,
+                  }}
+                  transition={sizeTransition}
+                />
+                <motion.span
+                  className="absolute"
+                  style={cornerStyle}
+                  animate={{
+                    top: cornerInset,
+                    right: cornerInset,
+                    width: cornerLen,
+                    height: cornerLen,
+                    borderTopWidth: cornerBorder,
+                    borderRightWidth: cornerBorder,
+                  }}
+                  transition={sizeTransition}
+                />
+                <motion.span
+                  className="absolute"
+                  style={cornerStyle}
+                  animate={{
+                    bottom: cornerInset,
+                    left: cornerInset,
+                    width: cornerLen,
+                    height: cornerLen,
+                    borderBottomWidth: cornerBorder,
+                    borderLeftWidth: cornerBorder,
+                  }}
+                  transition={sizeTransition}
+                />
+                <motion.span
+                  className="absolute"
+                  style={cornerStyle}
+                  animate={{
+                    bottom: cornerInset,
+                    right: cornerInset,
+                    width: cornerLen,
+                    height: cornerLen,
+                    borderBottomWidth: cornerBorder,
+                    borderRightWidth: cornerBorder,
+                  }}
+                  transition={sizeTransition}
+                />
               </motion.div>
             </motion.div>
 
@@ -248,9 +320,9 @@ export function Intro() {
               initial={{ opacity: 0 }}
               animate={{ opacity: step < 5 ? 1 : 0 }}
               transition={{ duration: 0.6, ease }}
-              className="min-w-0 flex-1 text-left font-sans text-3xl font-light leading-none uppercase tracking-[0.15em] whitespace-nowrap text-foreground/90 sm:text-4xl"
+              className="min-w-0 flex-1 text-left font-sans text-4xl font-light leading-none tracking-[-0.01em] whitespace-nowrap text-foreground sm:text-5xl"
             >
-              STUDIO
+              Studio
             </motion.span>
           </div>
         </motion.div>

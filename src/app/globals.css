@@ -13,10 +13,13 @@
   --color-brand-2: #e08a4a;
   --color-accent: #ffd9a0;
 
-  --font-display: var(--font-display), ui-serif, Georgia, serif;
+  /* Söhne-style neo-grotesque (Inter) across the whole site — display,
+     sans, and inter utilities are all aliased to the same loaded font so
+     every heading and paragraph shares one consistent typeface. */
+  --font-display: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
-  --font-inter: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-inter: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 
   --radius-4xl: 2rem;
 
