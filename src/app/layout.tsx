@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/site";
 import { Intro } from "@/components/intro";
 import "./globals.css";
 
-// Söhne-style neo-grotesque (Inter is the closest free match) used across
-// the entire site — headlines, body copy, and UI text all share this one
-// family now. `--font-display` and `--font-inter` are aliased to it in
-// globals.css so every existing font-display / font-sans / font-inter
-// utility resolves to the same typeface without touching each component.
-const sans = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
+// Söhne is self-hosted (see /public/fonts/soehne/ and @font-face in globals.css).
+// It's used across the entire site — headlines, body copy, and UI text all share
+// this one family. `--font-display`, `--font-sans`, and `--font-inter` are all
+// aliased to Söhne in globals.css.
 
 // Small uppercase labels / index numbers keep a distinct monospace accent.
 const mono = JetBrains_Mono({
@@ -59,7 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${mono.variable} h-full antialiased`}
+      className={`${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Intro />

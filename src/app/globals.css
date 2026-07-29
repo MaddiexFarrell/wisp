@@ -1,5 +1,31 @@
 @import "tailwindcss";
 
+/* Söhne webfonts — self-hosted for performance and licensing control.
+   Font files should be placed in /public/fonts/soehne/ */
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/soehne/soehne-light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/soehne/soehne-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/soehne/soehne-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-background: #0a0806;
   --color-surface: #14100c;
@@ -13,13 +39,13 @@
   --color-brand-2: #e08a4a;
   --color-accent: #ffd9a0;
 
-  /* Söhne-style neo-grotesque (Inter) across the whole site — display,
-     sans, and inter utilities are all aliased to the same loaded font so
-     every heading and paragraph shares one consistent typeface. */
-  --font-display: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Söhne neo-grotesque across the whole site — display, sans, and inter
+     utilities are all aliased to the same font family so every heading and
+     paragraph shares one consistent typeface. */
+  --font-display: "Söhne", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Söhne", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
-  --font-inter: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-inter: "Söhne", ui-sans-serif, system-ui, sans-serif;
 
   --radius-4xl: 2rem;
 
@@ -83,6 +109,16 @@
   }
 }
 
+/* Progress bar fill for testimonial auto-advance */
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 * {
   border-color: var(--color-border);
 }
@@ -106,21 +142,12 @@ body {
   color: #fff;
 }
 
-/* Thin, dark scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-background);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-surface-2);
-  border-radius: 999px;
-  border: 2px solid var(--color-background);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #23232f;
+/* Use the browser's native overlay scrollbar. Styling `::-webkit-scrollbar`
+   forces macOS Chrome into a classic scrollbar that reserves a solid gutter,
+   which reads as a dark gap on the far right of the light hero. `color-scheme:
+   dark` already keeps the native scrollbar dark-themed. */
+* {
+  scrollbar-width: thin;
 }
 
 @utility text-gradient {

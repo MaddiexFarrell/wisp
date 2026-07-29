@@ -4,20 +4,16 @@ import { site } from "@/lib/site";
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="relative overflow-hidden border-t border-border">
-      {/* Background image */}
+    <footer className="relative overflow-hidden border-t border-border bg-background">
+      {/* Subtle grain texture */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url(/footerbackground2.png)" }}
-      />
-      {/* Scrim: keep the image visible but the text legible */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/20"
+        className="grain pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-soft-light"
       />
 
-      <div className="relative z-10 mx-auto max-w-6xl px-5 py-16">
+      {/* Footer content */}
+      <div className="relative z-10 w-full px-6 pb-32 pt-16 sm:pb-40 md:px-12 lg:pb-48">
+        <div className="mx-auto max-w-6xl">
         <div className="flex flex-col justify-between gap-10 md:flex-row">
           <div className="max-w-sm">
             <Link
@@ -25,9 +21,6 @@ export function SiteFooter() {
               aria-label={site.name}
               className="inline-flex items-center"
             >
-              {/* Logo is a monochrome wordmark on transparency, so we paint it
-                  via a CSS mask — gives an exact beige rather than an
-                  approximate `filter` tint. */}
               <span
                 aria-hidden
                 className="block aspect-[1544/283] h-5 bg-[#d9c7a3] md:h-6"
@@ -71,6 +64,24 @@ export function SiteFooter() {
             © {year} {site.name}. All rights reserved.
           </p>
         </div>
+        </div>
+      </div>
+
+      {/* Large ghosted wordmark */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 select-none overflow-hidden"
+      >
+        <p
+          className="whitespace-nowrap text-center font-display font-light leading-[0.75] tracking-[-0.04em]"
+          style={{
+            fontSize: "clamp(120px, 18vw, 320px)",
+            color: "color-mix(in oklab, var(--color-foreground) 8%, transparent)",
+            transform: "translateY(22%)",
+          }}
+        >
+          Wisp Studio
+        </p>
       </div>
     </footer>
   );

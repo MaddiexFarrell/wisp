@@ -52,7 +52,8 @@ export function Work() {
         className="grain pointer-events-none absolute inset-0 opacity-[0.1] mix-blend-soft-light"
       />
 
-      <div className="relative mx-auto max-w-6xl px-5">
+      <div className="relative w-full px-6 md:px-12">
+        <div className="mx-auto max-w-6xl">
         <Reveal>
           <h2 className="font-display text-2xl font-light leading-[1.05] tracking-[-0.01em] text-balance sm:text-3xl lg:text-4xl">
             Recent launches.
@@ -116,6 +117,7 @@ export function Work() {
             );
           })}
         </ul>
+        </div>
       </div>
 
       {/* Cursor-following preview (desktop pointer only) */}
